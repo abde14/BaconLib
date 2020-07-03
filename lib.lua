@@ -1,7 +1,20 @@
--- BaconLib v1.0 by H3x0R
+-- BaconLib v1.1 (Unreleased Update) by H3x0R
+repeat game:GetService("RunService").RenderStepped:Wait() until game:IsLoaded() == true
 
 local library = {}
 local nextAllignmentAnchor = 10
+
+for _, gui in pairs(game:GetService("CoreGui").RobloxGui:GetChildren()) do
+    if gui:IsA("ScreenGui") and string.match(gui.Name, "_BACONLIB") then
+        gui:Destroy()
+    end
+end
+
+for _, gui in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
+    if gui:IsA("ScreenGui") and string.match(gui.Name, "_BACONLIB") then
+        gui:Destroy()
+    end
+end
 
 function library:CreateWindow(name)
 	if name == nil then error("Specify a name.", 0) return false end
@@ -14,8 +27,8 @@ function library:CreateWindow(name)
 	local SizeToggle = Instance.new("TextButton")
 	local listLayout = Instance.new("UIListLayout")
 	
-	randomize.Name = tostring(math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9))
-	randomize.Parent = game.Players.LocalPlayer.PlayerGui or game:GetService("CoreGui").RobloxGui
+	randomize.Name = tostring(math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9).."_BACONLIB")
+	randomize.Parent = game:GetService("CoreGui").RobloxGui or game:GetService("Players").LocalPlayer.PlayerGui
 	randomize.DisplayOrder = 100
 	randomize.ResetOnSpawn = false
 	
