@@ -26,6 +26,7 @@ function library:CreateWindow(name)
 	local TopLabel = Instance.new("TextLabel")
 	local SizeToggle = Instance.new("TextButton")
 	local listLayout = Instance.new("UIListLayout")
+	local UserInputService = game:GetService("UserInputService")
 	
 	randomize.Name = tostring(math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9).."_BACONLIB")
 	randomize.Parent = game:GetService("CoreGui").RobloxGui or game:GetService("Players").LocalPlayer.PlayerGui
@@ -34,13 +35,50 @@ function library:CreateWindow(name)
 	
 	TopBar.Name = "TopBar"
 	TopBar.Parent = randomize
-	TopBar.Active = true
-	TopBar.Draggable = true
+	-- Custom drag system added.
+	--TopBar.Active = true
+	--TopBar.Draggable = true
 	TopBar.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
 	TopBar.BorderSizePixel = 0
 	TopBar.Position = UDim2.new(0.489757448, 0, 0.489311516, 0)
 	TopBar.Size = UDim2.new(0, 240, 0, 30)
 	TopBar.ZIndex = 0
+	
+	local dragging;
+    local dragInput;
+    local dragStart;
+    local startPos;
+    
+    local function change(a)
+    	local diff = a.Position - dragStart
+    	TopBar.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + diff.X, startPos.Y.Scale, startPos.Y.Offset + diff.Y)
+    end
+    
+    TopBar.InputBegan:Connect(function(a)
+        if a.UserInputType == Enum.UserInputType.MouseButton1 or a.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = a.Position
+		    startPos = TopBar.Position
+		    
+		    a.Changed:Connect(function()
+		        if a.UserInputState == Enum.UserInputState.End then
+		            dragging = false
+		        end
+		    end)
+        end
+    end)
+    
+    TopBar.InputChanged:Connect(function(a)
+        if a.UserInputType == Enum.UserInputType.MouseMovement or a.UserInputType == Enum.UserInputType.Touch then
+            dragInput = a
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(a)
+        if a == dragInput and dragging == true then
+            change(a)
+        end
+    end)
 	
 	Container.Name = "Container"
 	Container.Parent = TopBar
