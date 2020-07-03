@@ -1,4 +1,13 @@
 -- BaconLib v1.1 (Unreleased Update) by H3x0R
+_BLVersion = "1.1"
+_BLChangelog = [[
+    v1.1:
+        Made custom smooth drag because Roblox's sucks.
+        Made the gui delete on re-execution.
+        Fixed a bug where Container.Size.Y.Offset would increase if close is used too fast.
+        Revised code.
+]]
+
 repeat game:GetService("RunService").RenderStepped:Wait() until game:IsLoaded() == true
 
 local library = {}
@@ -10,13 +19,13 @@ for _, gui in pairs(game:GetService("CoreGui").RobloxGui:GetChildren()) do
     end
 end
 
-for _, gui in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetChildren()) do
+for _, gui in pairs(game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):GetChildren()) do
     if gui:IsA("ScreenGui") and string.match(gui.Name, "_BACONLIB") then
         gui:Destroy()
     end
 end
 
-function library:CreateWindow(name)
+function library:CreateWindow(name, keyCode)
 	if name == nil then error("Specify a name.", 0) return false end
 	if not typeof(name) == "string" then error("Specify your name as a string.", 0) return false end
 	
@@ -26,10 +35,9 @@ function library:CreateWindow(name)
 	local TopLabel = Instance.new("TextLabel")
 	local SizeToggle = Instance.new("TextButton")
 	local listLayout = Instance.new("UIListLayout")
-	local UserInputService = game:GetService("UserInputService")
 	
 	randomize.Name = tostring(math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9).."_BACONLIB")
-	randomize.Parent = game:GetService("CoreGui").RobloxGui or game:GetService("Players").LocalPlayer.PlayerGui
+	randomize.Parent = game:GetService("CoreGui").RobloxGui or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 	randomize.DisplayOrder = 100
 	randomize.ResetOnSpawn = false
 	
@@ -44,6 +52,10 @@ function library:CreateWindow(name)
 	TopBar.Size = UDim2.new(0, 240, 0, 30)
 	TopBar.ZIndex = 0
 	
+	local UserInputService = game:GetService("UserInputService")
+	local TweenService = game:GetService("TweenService")
+	local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	
 	local dragging;
     local dragInput;
     local dragStart;
@@ -51,7 +63,9 @@ function library:CreateWindow(name)
     
     local function change(a)
     	local diff = a.Position - dragStart
-    	TopBar.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + diff.X, startPos.Y.Scale, startPos.Y.Offset + diff.Y)
+        local tween = TweenService:Create(TopBar, tweenInfo, {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + diff.X, startPos.Y.Scale, startPos.Y.Offset + diff.Y)})
+        
+        tween:Play()
     end
     
     TopBar.InputBegan:Connect(function(a)
@@ -79,6 +93,22 @@ function library:CreateWindow(name)
             change(a)
         end
     end)
+	
+	-- This is a good spot to put the keybind code so...
+	if keyCode == nil then -- this will keep older UIs from breaking
+	    keyCode = Enum.KeyCode.RightShift
+	end
+	
+	warn(name..": Press ["..tostring(keyCode).."] to show/hide the UI.")
+	UserInputService.InputBegan:Connect(function()
+	    if UserInputService:IsKeyDown(keyCode) then
+	        if randomize.Enabled == false then
+	            randomize.Enabled = true
+	        else
+	            randomize.Enabled = false
+	        end
+	    end
+	end)
 	
 	Container.Name = "Container"
 	Container.Parent = TopBar
@@ -150,6 +180,8 @@ function library:CreateWindow(name)
 					SizeToggle.Text = "-"
 					open = true
 				end
+				
+				wait(0.35)
 				debounce = false
 			end
 		end)
@@ -390,6 +422,10 @@ function library:GetTopBar(window)
 	if not window:FindFirstChild("TopBar") then error("That's not a gui created by the library!", 0) return false end
 	
 	return window.TopBar
+end
+
+function library:GetInfo()
+    return _BLVersion, _BLChangelog
 end
 
 return library
