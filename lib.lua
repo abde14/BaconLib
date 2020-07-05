@@ -698,7 +698,7 @@ function library:CreateDropdown(window, name)
 	TopLabel.Position = UDim2.new(0.0291666668, 0, 0.100000001, 0)
 	TopLabel.Selectable = true
 	TopLabel.Size = UDim2.new(0, 202, 0, 23)
-	TopLabel.Text = "Dropdown"
+	TopLabel.Text = name
 	TopLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 	TopLabel.TextSize = 14.000
 	TopLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
