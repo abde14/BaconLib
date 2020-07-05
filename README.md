@@ -7,4 +7,4 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/OpenGamerTips/BaconLi
 ```
 Go visit https://github.com/OpenGamerTips/BaconLib/wiki to learn how to use the library.
 
-Demo Showcase: ![agiflol](https://github.com/OpenGamerTips/BaconLib/blob/master/readme/byegMDRk7v.mp4?raw=true)
+Demo Showcase: https://github.com/OpenGamerTips/BaconLib/blob/master/readme/byegMDRk7v.mp4?raw=true
