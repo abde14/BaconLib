@@ -2,10 +2,13 @@
 _BLVersion = "1.1"
 _BLChangelog = [[
     v1.1:
+        Added keybinds, sliders, and you have asked, so you got dropdowns too!
         Made custom smooth drag because Roblox's sucks.
         Made the gui delete on re-execution.
         Fixed a bug where Container.Size.Y.Offset would increase if close is used too fast.
         Revised code.
+        [PRERELEASE-BUGFIX]: Fixed where the slider wouldn't give the correct value.
+        [PRERELEASE-BUGFIX]: Fixed where the slider would be off when you move the ui and change.
 ]]
 
 repeat game:GetService("RunService").RenderStepped:Wait() until game:IsLoaded() == true
@@ -404,10 +407,388 @@ function library:CreateToggle(window, text, currentState, func)
 		end
 		
 		tween:Play()
+		--print(toggled)
 		func(toggled)
 	end)
 	
 	return ToggleBtn
+end
+
+function library:CreateSlider(window, name, min, max, current, funcToCall)
+	local woah_a_slider = Instance.new("Frame")
+	local Bar = Instance.new("TextButton")
+	local Current = Instance.new("Frame")
+	local Value = Instance.new("TextLabel")
+	local Label = Instance.new("TextLabel")
+	
+	woah_a_slider.LayoutOrder = 1
+	woah_a_slider.Name = "woah_a_slider"
+	woah_a_slider.Parent = window.TopBar.Container
+	woah_a_slider.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	woah_a_slider.BackgroundTransparency = 1.000
+	woah_a_slider.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	woah_a_slider.BorderSizePixel = 0
+	woah_a_slider.Size = UDim2.new(0, 240, 0, 56)
+	
+	Bar.Name = "Bar"
+	Bar.Parent = woah_a_slider
+	Bar.AnchorPoint = Vector2.new(0.5, 0.5)
+	Bar.BackgroundColor3 = Color3.fromRGB(41, 41, 41)
+	Bar.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Bar.BorderSizePixel = 0
+	Bar.ClipsDescendants = true
+	Bar.Position = UDim2.new(0, 120, 0, 34)
+	Bar.Size = UDim2.new(0, 227, 0, 24)
+	Bar.AutoButtonColor = false
+	Bar.Font = Enum.Font.SourceSans
+	Bar.Text = ""
+	Bar.TextColor3 = Color3.fromRGB(0, 0, 0)
+	Bar.TextSize = 14.000
+	
+	Current.Name = "Current"
+	Current.Parent = Bar
+	Current.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+	Current.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Current.BorderSizePixel = 0
+	Current.Size = UDim2.new(0.5, 0, 1, 0)
+	
+	Value.Name = "Value"
+	Value.Parent = Bar
+	Value.Active = true
+	Value.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Value.BackgroundTransparency = 1.000
+	Value.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Value.BorderSizePixel = 0
+	Value.Position = UDim2.new(-0.00183696998, 0, -0.0833333358, 2)
+	Value.Size = UDim2.new(0, 227, 0, 24)
+	Value.Text = tostring(current)
+	Value.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Value.TextScaled = true
+	Value.TextSize = 15.000
+	Value.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	Value.TextWrapped = true
+	
+	Label.Name = "Label"
+	Label.Parent = woah_a_slider
+	Label.Active = true
+	Label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Label.BackgroundTransparency = 1.000
+	Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Label.BorderSizePixel = 0
+	Label.Position = UDim2.new(0.0289999992, 0, 0, 2)
+	Label.Selectable = true
+	Label.Size = UDim2.new(0, 202, 0, 18)
+	Label.Text = name
+	Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Label.TextScaled = true
+	Label.TextSize = 15.000
+	Label.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	Label.TextWrapped = true
+	Label.TextXAlignment = Enum.TextXAlignment.Left
+	
+	coroutine.wrap(function()
+		local script = Instance.new('LocalScript', Bar)
+		script.Name = "FAKESCRIPT"
+		
+		function getSize(Bar, min, max)
+			max = max - min -- i hate math
+			
+			local BarSize = Bar.AbsoluteSize.X
+			local CurrBarSize = Bar.Current.Size.X.Offset
+			local Value = min + (max * (CurrBarSize / BarSize))
+			local Size = math.floor(Value)
+			
+			return Size
+		end
+		
+		function setSize(Bar, max, min, curr)
+			Bar.Current.Size = UDim2.new(0, ((curr / (max + min)) * Bar.AbsoluteSize.X), 1, 0)
+		end
+		
+		local UserInputService = game:GetService("UserInputService")
+		
+		local TweenService = game:GetService("TweenService")
+		local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+		
+		local Bar = script.Parent
+		local CurrBar = Bar.Current
+		local ValueTxt = Bar.Value
+		
+		local PlayerMouse = game:GetService("Players").LocalPlayer:GetMouse()
+		
+		local isDown = false
+		local currSize = current
+		
+		Bar.MouseButton1Down:Connect(function()
+			isDown = true
+			repeat game:GetService("RunService").RenderStepped:Wait() until isDown == false
+			funcToCall(currSize)
+		end)
+		
+		UserInputService.InputEnded:Connect(function(input, gp)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				isDown = false
+			end
+		end)
+		
+		setSize(Bar, max, min, current)
+		
+		PlayerMouse.Move:Connect(function()
+			if isDown == true then
+				local tween;
+		        
+				if PlayerMouse.X < Bar.AbsolutePosition.X then
+					tween = TweenService:Create(CurrBar, tweenInfo, {Size = UDim2.new(0, 0, 1, 0)})
+				elseif PlayerMouse.X > (Bar.AbsolutePosition.X + Bar.AbsoluteSize.X) then
+					tween = TweenService:Create(CurrBar, tweenInfo, {Size = UDim2.new(0, Bar.AbsoluteSize.X, 1, 0)})
+				else
+					tween = TweenService:Create(CurrBar, tweenInfo, {Size = UDim2.new(0, (PlayerMouse.X - Bar.AbsolutePosition.X), 1, 0)})
+				end
+				
+				tween:Play()
+				
+				currSize = getSize(Bar, min, max)
+				ValueTxt.Text = currSize
+			end
+		end)
+	end)()
+	
+	window.TopBar.Container.Size = UDim2.new(0, 240, 0, window.TopBar.Container.Size.Y.Offset + 56)
+	
+	return Bar
+end
+
+function library:CreateKeyBind(window, name, key, funcToCall)
+	local yes_a_keybind = Instance.new("Frame")
+	local Bind = Instance.new("TextButton")
+	local Label = Instance.new("TextLabel")
+	local beingChosen = false
+	key = string.lower(key)
+	
+	yes_a_keybind.LayoutOrder = 1
+	yes_a_keybind.Name = "yes_a_keybind"
+	yes_a_keybind.Parent = window.TopBar.Container
+	yes_a_keybind.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	yes_a_keybind.BackgroundTransparency = 1.000
+	yes_a_keybind.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	yes_a_keybind.BorderSizePixel = 0
+	yes_a_keybind.Size = UDim2.new(0, 240, 0, 43)
+	
+	Bind.Name = "Bind"
+	Bind.Parent = yes_a_keybind
+	Bind.BackgroundColor3 = Color3.fromRGB(41, 41, 41)
+	Bind.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Bind.BorderSizePixel = 0
+	Bind.Position = UDim2.new(0.725000024, 0, 0.125, 0)
+	Bind.Size = UDim2.new(0, 60, 0, 30)
+	Bind.Text = string.upper(key)
+	Bind.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Bind.TextSize = 15.000
+	Bind.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	Bind.TextWrapped = true
+	
+	Label.Name = "Label"
+	Label.Parent = yes_a_keybind
+	Label.Active = true
+	Label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Label.BackgroundTransparency = 1.000
+	Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Label.BorderSizePixel = 0
+	Label.Position = UDim2.new(0.0291666668, 0, 0.125, 0)
+	Label.Selectable = true
+	Label.Size = UDim2.new(0, 161, 0, 30)
+	Label.Text = name
+	Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Label.TextScaled = true
+	Label.TextSize = 15.000
+	Label.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	Label.TextWrapped = true
+	
+	local Players = game:GetService("Players")
+	local Mouse = Players.LocalPlayer:GetMouse()
+	Bind.MouseButton1Down:Connect(function()
+		beingChosen = true
+		local Key = nil
+		
+		Bind.Text = "..."
+		connection = Mouse.KeyDown:Connect(function(Key)
+			Key = string.lower(Key)
+			key = Key
+			Bind.Text = string.upper(key)
+			wait(0.1)
+			beingChosen = false
+			connection:Disconnect()
+		end)
+	end)
+		
+	keybindconnection = Mouse.KeyDown:Connect(function(Key)
+		if beingChosen == true then return end
+		if string.lower(Key) == key then
+			funcToCall(string.lower(Key))
+		end
+	end)
+	
+	destroyedconnection = window.Parent.ChildRemoved:Connect(function(object)
+	    if object == window then
+    	    keybindconnection:Disconnect()
+    	    destroyedconnection:Disconnect()
+    	end
+	end)
+	
+	window.TopBar.Container.Size = UDim2.new(0, 240, 0, window.TopBar.Container.Size.Y.Offset + 43)
+	
+	return Bind
+end
+
+local dropdownSizes = {}
+function library:CreateDropdown(window, name)
+	local kek_dropdown_lol = Instance.new("Frame")
+	local DropFrame = Instance.new("Frame")
+	local UIListLayout = Instance.new("UIListLayout")
+	local SizeToggle = Instance.new("TextButton")
+	local TopLabel = Instance.new("TextLabel")
+	
+	kek_dropdown_lol.LayoutOrder = 1
+	kek_dropdown_lol.Name = "kek_dropdown_lol"
+	kek_dropdown_lol.Parent = window.TopBar.Container
+	kek_dropdown_lol.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	kek_dropdown_lol.BackgroundTransparency = 0.500
+	kek_dropdown_lol.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	kek_dropdown_lol.BorderSizePixel = 0
+	kek_dropdown_lol.Position = UDim2.new(-0.00416666688, 0, 0.0811688304, 0)
+	kek_dropdown_lol.Size = UDim2.new(0, 240, 0, 30)
+	
+	table.insert(dropdownSizes, #dropdownSizes + 1, DropFrame.Size)
+	DropFrame.LayoutOrder = 1
+	DropFrame.Name = #dropdownSizes -- iteration free lol
+	DropFrame.Parent = window.TopBar.Container
+	DropFrame.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	DropFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	DropFrame.BorderSizePixel = 0
+	DropFrame.ClipsDescendants = true
+	DropFrame.Position = UDim2.new(0, 0, 1, 0)
+	DropFrame.Size = UDim2.new(0, 240, 0, 0)
+	
+	UIListLayout.Parent = DropFrame
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	
+	SizeToggle.Name = #dropdownSizes
+	SizeToggle.Parent = kek_dropdown_lol
+	SizeToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	SizeToggle.BackgroundTransparency = 1.000
+	SizeToggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	SizeToggle.BorderSizePixel = 0
+	SizeToggle.Position = UDim2.new(0.872619033, 0, -0.00833332539, 0)
+	SizeToggle.Size = UDim2.new(0, 30, 0, 30)
+	SizeToggle.Modal = true
+	SizeToggle.Text = "-"
+	SizeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+	SizeToggle.TextScaled = true
+	SizeToggle.TextSize = 14.000
+	SizeToggle.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	SizeToggle.TextWrapped = true
+	
+	TopLabel.Name = "TopLabel"
+	TopLabel.Parent = kek_dropdown_lol
+	TopLabel.Active = true
+	TopLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	TopLabel.BackgroundTransparency = 1.000
+	TopLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TopLabel.BorderSizePixel = 0
+	TopLabel.Position = UDim2.new(0.0291666668, 0, 0.100000001, 0)
+	TopLabel.Selectable = true
+	TopLabel.Size = UDim2.new(0, 202, 0, 23)
+	TopLabel.Text = "Dropdown"
+	TopLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	TopLabel.TextSize = 14.000
+	TopLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	TopLabel.TextWrapped = true
+	TopLabel.TextXAlignment = Enum.TextXAlignment.Left
+	window.TopBar.Container.Size = UDim2.new(0, 240, 0, window.TopBar.Container.Size.Y.Offset + 30)
+	
+	local TweenService = game:GetService("TweenService") 
+	local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	local savedOffset;
+	local tween;
+	local tween2;
+	local tween3;
+	
+	local open = false
+	local debounce = false
+	SizeToggle.MouseButton1Down:Connect(function()
+		if debounce == false then
+			debounce = true
+			
+			if open == true then
+				savedOffset = dropdownSizes[tonumber(DropFrame.Name)] or DropFrame.Size
+				tween = TweenService:Create(DropFrame, tweenInfo, {Size = DropFrame.Size - UDim2.new(0, 0, 0, DropFrame.Size.Y.Offset)})
+				tween:Play()
+				
+				tween2 = TweenService:Create(window.TopBar.Container, tweenInfo, {Size = UDim2.new(0, 240, 0, window.TopBar.Container.Size.Y.Offset - savedOffset.Y.Offset)})
+				tween2:Play()
+				
+				tween3 = TweenService:Create(kek_dropdown_lol, tweenInfo, {Size = UDim2.new(0, 240, 0, kek_dropdown_lol.Size.Y.Offset - savedOffset.Y.Offset)})
+				--tween3:Play()
+				SizeToggle.Text = "+"
+				open = false
+			else
+				savedOffset = dropdownSizes[tonumber(DropFrame.Name)] or DropFrame.Size
+				tween = TweenService:Create(DropFrame, tweenInfo, {Size = DropFrame.Size + UDim2.new(0, 0, 0, savedOffset.Y.Offset)})
+				tween:Play()
+				
+				tween2 = TweenService:Create(window.TopBar.Container, tweenInfo, {Size = UDim2.new(0, 240, 0, window.TopBar.Container.Size.Y.Offset + savedOffset.Y.Offset)})
+				tween2:Play()
+				
+				tween3 = TweenService:Create(kek_dropdown_lol, tweenInfo, {Size = UDim2.new(0, 240, 0, kek_dropdown_lol.Size.Y.Offset + savedOffset.Y.Offset)})
+				--tween3:Play()
+				SizeToggle.Text = "-"
+				open = true
+			end
+			
+			wait(0.2)
+			debounce = false
+		end
+	end)
+	
+	return kek_dropdown_lol
+end
+
+function library:NewDropdownButton(window, dropdown, name, action)
+    local num = dropdown:FindFirstChildWhichIsA("TextButton").Name
+    
+	local DR_FRAME = Instance.new("Frame")
+	DR_FRAME.Name = "DR_FRAME"
+	DR_FRAME.Parent = window.TopBar.Container[num] -- hacky method but will do
+	DR_FRAME.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	DR_FRAME.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	DR_FRAME.BorderSizePixel = 0
+	DR_FRAME.Size = UDim2.new(0, 240, 0, 30)
+	
+	local Button = Instance.new("TextButton")
+	Button.Name = "Button"
+	Button.Parent = DR_FRAME
+	Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Button.BackgroundTransparency = 1.000
+	Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Button.BorderSizePixel = 0
+	Button.Size = UDim2.new(0, 240, 0, 30)
+	Button.Text = name
+	Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Button.TextSize = 14.000
+	Button.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+	Button.TextWrapped = true
+	
+	Button.MouseButton1Down:Connect(function()
+		action(Button.Name)
+	end)
+	
+	if dropdownSizes[tonumber(num)] then
+		table.insert(dropdownSizes, tonumber(num), UDim2.new(0, 240, 0, dropdownSizes[tonumber(num)].Y.Offset + 30))
+	else
+		table.insert(dropdownSizes, tonumber(num), UDim2.new(0, 240, 0, 30))
+	end
+	
+	return Button
 end
 
 function library:GetContainer(window)
