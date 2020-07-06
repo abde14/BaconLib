@@ -681,7 +681,7 @@ function library:CreateDropdown(window, name)
 	SizeToggle.Position = UDim2.new(0.872619033, 0, -0.00833332539, 0)
 	SizeToggle.Size = UDim2.new(0, 30, 0, 30)
 	SizeToggle.Modal = true
-	SizeToggle.Text = "-"
+	SizeToggle.Text = "+"
 	SizeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 	SizeToggle.TextScaled = true
 	SizeToggle.TextSize = 14.000
@@ -729,7 +729,7 @@ function library:CreateDropdown(window, name)
 				
 				tween3 = TweenService:Create(kek_dropdown_lol, tweenInfo, {Size = UDim2.new(0, 240, 0, kek_dropdown_lol.Size.Y.Offset - savedOffset.Y.Offset)})
 				--tween3:Play()
-				SizeToggle.Text = "-"
+				SizeToggle.Text = "+"
 				open = false
 			else
 				savedOffset = dropdownSizes[tonumber(DropFrame.Name)] or DropFrame.Size
@@ -741,7 +741,7 @@ function library:CreateDropdown(window, name)
 				
 				tween3 = TweenService:Create(kek_dropdown_lol, tweenInfo, {Size = UDim2.new(0, 240, 0, kek_dropdown_lol.Size.Y.Offset + savedOffset.Y.Offset)})
 				--tween3:Play()
-				SizeToggle.Text = "+"
+				SizeToggle.Text = "-"
 				open = true
 			end
 			
