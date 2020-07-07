@@ -1,4 +1,4 @@
--- BaconLib v1.1 (Unreleased Update) by H3x0R
+-- BaconLib v1.1 by H3x0R
 _BLVersion = "1.1"
 _BLChangelog = [[
     v1.1:
@@ -227,14 +227,14 @@ function library:CreateNotification(title, txt)
 	TopBar.Size = UDim2.new(0, 278, 0, 29)
 	TopBar.ZIndex = 999 - #Notifications
 	
-	Title.Name = title
+	Title.Name = "Title"
 	Title.Parent = TopBar
 	Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	Title.BackgroundTransparency = 1.000
 	Title.Position = UDim2.new(0, 0, -0.00985222869, 0)
 	Title.Size = UDim2.new(0, 278, 0, 27)
 	Title.Font = Enum.Font.SourceSans
-	Title.Text = "Bug"
+	Title.Text = title
 	Title.TextColor3 = Color3.fromRGB(208, 208, 208)
 	Title.TextScaled = true
 	Title.TextSize = 14.000
