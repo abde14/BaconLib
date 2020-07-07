@@ -197,6 +197,106 @@ function library:CreateWindow(name, keyCode)
 	return randomize
 end
 
+local Notifications = {}
+
+function library:CreateNotification(title, txt)
+	local ScreenGui = Instance.new("ScreenGui")
+	local a_notif_owo = Instance.new("Frame")
+	local TopBar = Instance.new("Frame")
+	local Title = Instance.new("TextLabel")
+	local Container = Instance.new("Frame")
+	local Text = Instance.new("TextLabel")
+	
+	ScreenGui.Name = tostring(math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9)..math.random(0, 9).."_BACONLIB")
+	ScreenGui.Parent = game:GetService("CoreGui").RobloxGui or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	
+	a_notif_owo.Name = "a_notif_owo"
+	a_notif_owo.Parent = ScreenGui
+	a_notif_owo.Active = true
+	a_notif_owo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	a_notif_owo.BackgroundTransparency = 0.900
+	a_notif_owo.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	a_notif_owo.BorderSizePixel = 0
+	a_notif_owo.Size = UDim2.new(0, 278, 0, 146)
+	
+	TopBar.Name = "TopBar"
+	TopBar.Parent = a_notif_owo
+	TopBar.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+	TopBar.BorderSizePixel = 0
+	TopBar.Size = UDim2.new(0, 278, 0, 29)
+	TopBar.ZIndex = 999 - #Notifications
+	
+	Title.Name = title
+	Title.Parent = TopBar
+	Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Title.BackgroundTransparency = 1.000
+	Title.Position = UDim2.new(0, 0, -0.00985222869, 0)
+	Title.Size = UDim2.new(0, 278, 0, 27)
+	Title.Font = Enum.Font.SourceSans
+	Title.Text = "Bug"
+	Title.TextColor3 = Color3.fromRGB(208, 208, 208)
+	Title.TextScaled = true
+	Title.TextSize = 14.000
+	Title.TextWrapped = true
+	
+	Container.Name = "Container"
+	Container.Parent = TopBar
+	Container.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+	Container.BorderSizePixel = 0
+	Container.Position = UDim2.new(0, 0, 0.975474417, 0)
+	Container.Size = UDim2.new(0, 278, 0, 118)
+	Container.ZIndex = 998
+	
+	Text.Name = "Text"
+	Text.Parent = Container
+	Text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Text.BackgroundTransparency = 1.000
+	Text.Size = UDim2.new(0, 278, 0, 118)
+	Text.Font = Enum.Font.SourceSans
+	Text.Text = txt --"actz kiss 3dsboy08"
+	Text.TextColor3 = Color3.fromRGB(208, 208, 208)
+	Text.TextSize = 25.000
+	Text.TextWrapped = true
+	Text.TextYAlignment = Enum.TextYAlignment.Top
+	
+	local Frame = a_notif_owo
+	
+	local Dimensions = workspace.CurrentCamera.ViewportSize
+	local ScreenX = Dimensions.X
+	local ScreenY = Dimensions.Y
+	
+	local Padding = 25
+	
+	local PaddingX = ScreenX - Padding
+	local PaddingY = (ScreenY - Padding) - (Padding + 8)
+	
+	local TweenService = game:GetService("TweenService")
+	local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	
+	Frame.Position = UDim2.new(0, ScreenX, 0, ScreenY)
+	--wait(3)
+	if #Notifications > 0 then
+		local Frame2 = Notifications[#Notifications]
+		--print(Frame2.Position.Y.Offset)
+		local Tween = TweenService:Create(Frame, tweenInfo, {Position = UDim2.new(0, (PaddingX - Frame.Size.X.Offset), 0, ((Frame2.Position.Y.Offset - Padding) - Frame2.Size.Y.Offset))})
+		Tween:Play()
+		--print("played")
+	else
+		local Tween = TweenService:Create(Frame, tweenInfo, {Position = UDim2.new(0, (PaddingX - Frame.Size.X.Offset), 0, (PaddingY - Frame.Size.Y.Offset))})
+		Tween:Play()
+	end
+	
+	table.insert(Notifications, Frame)
+	coroutine.wrap(function()
+		wait(4)
+		table.remove(Notifications, table.find(Notifications, Frame))
+		
+		local Tween = TweenService:Create(Frame, tweenInfo, {Position = UDim2.new(0, ScreenX, 0, (Frame.Position.Y.Offset))})
+		Tween:Play()
+	end)()
+end
+
 function increase(window)
 	window.TopBar.Container.Size = UDim2.new(0, 240, 0, window.TopBar.Container.Size.Y.Offset + 40)
 end
