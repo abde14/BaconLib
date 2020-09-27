@@ -414,7 +414,7 @@ function library:CreateTextBox(window, font, placeholderText, text, callback)
 	_TextBox.TextWrapped = true
 	_TextBox.InputBegan:Connect(function(input)
 	    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Return then
-	        callback(_TextBox.Text)
+	        if callback and type(callback) == "function" do callback(_TextBox.Text) end
 	    end
 	end)
 	
