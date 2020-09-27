@@ -60,7 +60,7 @@ function library:CreateWindow(name, keyCode)
 	
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
-	local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+	local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 	
 	local dragging;
     local dragInput;
