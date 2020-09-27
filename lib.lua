@@ -1,5 +1,5 @@
--- BaconLib v1.1 by H3x0R
-_BLVersion = "1.1"
+-- BaconLib v1.2 by H3x0R
+_BLVersion = "1.2"
 _BLChangelog = [[
     v1.1:
         Added keybinds, sliders, and you have asked, so you got dropdowns too!
@@ -9,6 +9,9 @@ _BLChangelog = [[
         Revised code.
         [PRERELEASE-BUGFIX]: Fixed where the slider wouldn't give the correct value.
         [PRERELEASE-BUGFIX]: Fixed where the slider would be off when you move the ui and change.
+    v1.2:
+        Added callbacks for textboxes.
+        Bugfixes.
 ]]
 
 repeat game:GetService("RunService").RenderStepped:Wait() until game:IsLoaded() == true
@@ -57,7 +60,7 @@ function library:CreateWindow(name, keyCode)
 	
 	local UserInputService = game:GetService("UserInputService")
 	local TweenService = game:GetService("TweenService")
-	local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+	local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
 	
 	local dragging;
     local dragInput;
@@ -161,7 +164,7 @@ function library:CreateWindow(name, keyCode)
 	-- Setup the scripting part
 	spawn(function()
 		local TweenService = game:GetService("TweenService") 
-		local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+		local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 		local tween
 		
 		local open = true
@@ -374,7 +377,7 @@ function library:CreateButton(window, text, func)
 	return Button
 end
 
-function library:CreateTextBox(window, font, placeholderText, text)
+function library:CreateTextBox(window, font, placeholderText, text, callback)
 	if not window:IsA("ScreenGui") then error("Specify a gui.", 0) return false end
 	if not window:FindFirstChild("TopBar") then error("That's not a gui created by the library!", 0) return false end
 	if not typeof(font) == "EnumItem" then error("The second argument isn't a font enum!", 0) return false end
@@ -409,6 +412,12 @@ function library:CreateTextBox(window, font, placeholderText, text)
 	_TextBox.TextSize = 15.000
 	_TextBox.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 	_TextBox.TextWrapped = true
+	_TextBox.InputBegan:Connect(function(input)
+	    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Return then
+	        callback(_TextBox.Text)
+	    end
+	end)
+	
 	increase(window)
 	
 	return _TextBox
@@ -514,7 +523,7 @@ function library:CreateToggle(window, text, currentState, func)
 	return ToggleBtn
 end
 
-function library:CreateSlider(window, name, min, max, current, funcToCall)
+function library:CreateSlider(window, name, min, max, current, callback)
 	local woah_a_slider = Instance.new("Frame")
 	local Bar = Instance.new("TextButton")
 	local Current = Instance.new("Frame")
@@ -622,7 +631,7 @@ function library:CreateSlider(window, name, min, max, current, funcToCall)
 		Bar.MouseButton1Down:Connect(function()
 			isDown = true
 			repeat game:GetService("RunService").RenderStepped:Wait() until isDown == false
-			funcToCall(currSize)
+			callback(currSize)
 		end)
 		
 		UserInputService.InputEnded:Connect(function(input, gp)
@@ -658,7 +667,7 @@ function library:CreateSlider(window, name, min, max, current, funcToCall)
 	return Bar
 end
 
-function library:CreateKeyBind(window, name, key, funcToCall)
+function library:CreateKeyBind(window, name, key, callback)
 	local yes_a_keybind = Instance.new("Frame")
 	local Bind = Instance.new("TextButton")
 	local Label = Instance.new("TextLabel")
@@ -724,7 +733,7 @@ function library:CreateKeyBind(window, name, key, funcToCall)
 	keybindconnection = Mouse.KeyDown:Connect(function(Key)
 		if beingChosen == true then return end
 		if string.lower(Key) == key then
-			funcToCall(string.lower(Key))
+			callback(string.lower(Key))
 		end
 	end)
 	
