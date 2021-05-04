@@ -150,7 +150,7 @@ function library:CreateWindow(name, keyCode)
 	SizeToggle.BorderSizePixel = 0
 	SizeToggle.Position = UDim2.new(0.872619033, 0, -0.00833332539, 0)
 	SizeToggle.Size = UDim2.new(0, 30, 0, 30)
-	SizeToggle.Modal = true
+	SizeToggle.Modal = false
 	SizeToggle.Text = "-"
 	SizeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 	SizeToggle.TextScaled = true
@@ -789,7 +789,7 @@ function library:CreateDropdown(window, name)
 	SizeToggle.BorderSizePixel = 0
 	SizeToggle.Position = UDim2.new(0.872619033, 0, -0.00833332539, 0)
 	SizeToggle.Size = UDim2.new(0, 30, 0, 30)
-	SizeToggle.Modal = true
+	SizeToggle.Modal = false
 	SizeToggle.Text = "+"
 	SizeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 	SizeToggle.TextScaled = true
